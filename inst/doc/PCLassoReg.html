@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>An introduction to PCLassoReg</title>
+
+<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<link href="data:text/css,%0Aa%2Eanchor%2Dsection%20%7Bmargin%2Dleft%3A%2010px%3B%20visibility%3A%20hidden%3B%20color%3A%20inherit%3B%7D%0Aa%2Eanchor%2Dsection%3A%3Abefore%20%7Bcontent%3A%20%27%23%27%3B%7D%0A%2EhasAnchor%3Ahover%20a%2Eanchor%2Dsection%20%7Bvisibility%3A%20visible%3B%7D%0A" rel="stylesheet" />
+<script src="data:application/javascript;base64,Ly8gQW5jaG9yIHNlY3Rpb25zIHYxLjAgd3JpdHRlbiBieSBBdHN1c2hpIFlhc3Vtb3RvIG9uIE9jdCAzcmQsIDIwMjAuCmRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ0RPTUNvbnRlbnRMb2FkZWQnLCBmdW5jdGlvbigpIHsKICAvLyBEbyBub3RoaW5nIGlmIEFuY2hvckpTIGlzIHVzZWQKICBpZiAodHlwZW9mIHdpbmRvdy5hbmNob3JzID09PSAnb2JqZWN0JyAmJiBhbmNob3JzLmhhc093blByb3BlcnR5KCdoYXNBbmNob3JKU0xpbmsnKSkgewogICAgcmV0dXJuOwogIH0KCiAgY29uc3QgaCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoJ2gxLCBoMiwgaDMsIGg0LCBoNSwgaDYnKTsKCiAgLy8gRG8gbm90aGluZyBpZiBzZWN0aW9ucyBhcmUgYWxyZWFkeSBhbmNob3JlZAogIGlmIChBcnJheS5mcm9tKGgpLnNvbWUoeCA9PiB4LmNsYXNzTGlzdC5jb250YWlucygnaGFzQW5jaG9yJykpKSB7CiAgICByZXR1cm4gbnVsbDsKICB9CgogIC8vIFVzZSBzZWN0aW9uIGlkIHdoZW4gcGFuZG9jIHJ1bnMgd2l0aCAtLXNlY3Rpb24tZGl2cwogIGNvbnN0IHNlY3Rpb25faWQgPSBmdW5jdGlvbih4KSB7CiAgICByZXR1cm4gKCh4LmNsYXNzTGlzdC5jb250YWlucygnc2VjdGlvbicpIHx8ICh4LnRhZ05hbWUgPT09ICdTRUNUSU9OJykpCiAgICAgICAgICAgID8geC5pZCA6ICcnKTsKICB9OwoKICAvLyBBZGQgYW5jaG9ycwogIGguZm9yRWFjaChmdW5jdGlvbih4KSB7CiAgICBjb25zdCBpZCA9IHguaWQgfHwgc2VjdGlvbl9pZCh4LnBhcmVudEVsZW1lbnQpOwogICAgaWYgKGlkID09PSAnJykgewogICAgICByZXR1cm4gbnVsbDsKICAgIH0KICAgIGxldCBhbmNob3IgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdhJyk7CiAgICBhbmNob3IuaHJlZiA9ICcjJyArIGlkOwogICAgYW5jaG9yLmNsYXNzTGlzdCA9IFsnYW5jaG9yLXNlY3Rpb24nXTsKICAgIHguY2xhc3NMaXN0LmFkZCgnaGFzQW5jaG9yJyk7CiAgICB4LmFwcGVuZENoaWxkKGFuY2hvcik7CiAgfSk7Cn0pOwo="></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">An introduction to PCLassoReg</h1>
+
+
+
+<div id="introduction" class="section level1">
+<h1>1 Introduction</h1>
+<p><strong>PCLassoReg</strong> is a package that implements protein complex-based group regression models (PCLasso and PCLasso2) for risk protein complex identification.</p>
+<div id="pclasso" class="section level2">
+<h2>1.1 PCLasso</h2>
+<p>PCLasso is a prognostic model that identifies risk protein complexes associated with survival. It has three inputs: a gene/protein expression matrix, survival data, and protein complexes. PCLasso is based on the Cox PH model and estimates the Cox regression coefficients by maximizing partial likelihood with regularization penalty. Considering that genes usually function by forming protein complexes, PCLasso regards genes belonging to the same protein complex as a group, and constructs a l1/l2 penalty based on the sum (i.e., l1 norm) of the l2 norms of the regression coefficients of the group members to perform the selection of features at the group level. It deals with the overlapping problem of protein complexes by constructing a latent group Lasso-Cox model. Through the final sparse solution, we can predict the patient’s risk score based on a small set of protein complexes and identify risk protein complexes that are frequently selected to construct prognostic models. The penalty parameters “grSCAD” and “grMCP” can also be used to identify survival-associated risk protein complexes. Their penalty for large coefficients is smaller than “grLasso”, so they tend to choose less risk protein complexes.</p>
+<p>PCLasso solves the following problem: <span class="math display">\[\begin{equation}
+ \begin{aligned}
+       &amp; \hat\beta =
+\mathop{\arg\min}_{\beta\in{R}^p}\left[-\frac{2}{n}\sum_{r=1}^{m}\left(x_{j(r)}^
+{T}\mathbf{\beta}-\log\bigg(\sum_{j\in{R}_r}e^{x_{i}^{T}\beta}\bigg)\right)+
+\lambda\sum_{k=1}^{K}\sqrt{|G_k|}\left\|\gamma_k\right\|\right]\\
+&amp; \mathrm{s.t.}\ \ \beta=\sum_{k=1}^{K}\gamma_k
+       \end{aligned}
+\end{equation}
+\]</span> where the first term represents the log partial likelihood function, and the second term is a group Lasso (“grLasso”) penalty.</p>
+</div>
+<div id="pclasso2" class="section level2">
+<h2>1.2 PCLasso2</h2>
+<p>PCLasso2 is a classification model that identifies risk protein complexes associated with classes. It has three inputs: a gene/protein expression matrix, a vector of binary response variables, and a number of known protein complexes. PCLasso2 is based on the logistic regression model and estimates the logistic regression coefficients by maximizing likelihood function with regularization penalty. PCLasso2 regards proteins belonging to the same protein complex as a group and constructs a group Lasso penalty (l1/l2 penalty) based on the sum (i.e. l1 norm) of the l2 norms of the regression coefficients of the group members to perform the selection of features at the group level. With the group Lasso penalty, PCLasso2 trains the logistic regression model and obtains a sparse solution at the protein complex level, that is, the proteins belonging to a protein complex are either wholly included or wholly excluded from the model. PCLasso2 outputs a prediction model and a small set of protein complexes included in the model, which are referred to as risk protein complexes. The PCSCAD and PCMCP are performed by setting the penalty parameter as “grSCAD” and “grMCP”, respectively.</p>
+<p>PCLasso2 solves the following problem: <span class="math display">\[\begin{equation}
+ \begin{aligned}
+       &amp; \mathop{\arg\min}_{\beta_0,\beta}\left\{-\frac{1}{n}\sum_{i=1}^{n}
+       \left[y_i\left(\beta_0+x_i^{T}\beta\right)-\log\bigg(1+e^{\beta_0+
+       x_{i}^{T}\beta}\bigg)\right]+
+\lambda\sum_{k=1}^{K}\sqrt{|G_k|}\left\|\gamma_k\right\|\right\}\\
+&amp; \mathrm{s.t.}\ \ \beta=\sum_{k=1}^{K}\gamma_k
+       \end{aligned}
+\end{equation}
+\]</span> where the first term represents the log-likelihood function, and the second term is a group Lasso (“grLasso”) penalty.</p>
+</div>
+</div>
+<div id="installation" class="section level1">
+<h1>2 Installation</h1>
+<p>Like many other R packages, the simplest way to obtain RLassoCox is to install it directly from CRAN. Type the following command in R console:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;PCLassoReg&quot;</span>)</span></code></pre></div>
+<p>To install the latest development version from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;weiliu123/PCLassoReg&quot;</span>)</span></code></pre></div>
+</div>
+<div id="pclassoreg" class="section level1">
+<h1>3 PCLassoReg</h1>
+<p>In this section, we will go over the main functions, see the basic operations and have a look at the outputs. Users may have a better idea after this section what functions are available, which one to choose, or at least where to seek help.</p>
+<p>First, we load the <strong>PCLassoReg</strong> package:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;PCLassoReg&quot;</span>)</span></code></pre></div>
+<div id="pclasso-1" class="section level2">
+<h2>3.1 PCLasso</h2>
+<p>The PCLasso model accepts a gene/protein expression matrix, survival data, and protein complexes for training the prognostic model. We load a set of data created beforehand for illustration. Users can either load their own data or use those saved in the workspace.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load data</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(survivalData)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(PCGroups)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> survivalData<span class="sc">$</span>Exp</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> survivalData<span class="sc">$</span>survData</span></code></pre></div>
+<p>The commands load a list <code>survivalData</code> that contains a gene expression matrix <code>Exp</code> and survival information <code>survData</code> of patients in <code>Exp</code>, and a data frame <code>PCGroups</code> containing the protein complexes downloaded from [CORUM] (<a href="https://mips.helmholtz-muenchen.de/corum/" class="uri">https://mips.helmholtz-muenchen.de/corum/</a>).</p>
+<p><code>survData</code> is an n x 2 matrix, with a column “time” of failure/censoring times, and “status” a 0/1 indicator, with 1 meaning the time is a failure time, and zero a censoring time.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(survivalData<span class="sc">$</span>survData)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        time status</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; S1 22.92000      1</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; S2 99.12000      0</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; S3 64.90000      0</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; S4 68.88000      1</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; S5 23.40000      1</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; S6 57.13333      0</span></span></code></pre></div>
+<p>Use <code>getPCGroups</code> function to get human protein complexes from <code>PCGroups</code>. Note that the parameter <code>Type</code> should be consistent the gene names in <code>Exp</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get human protein complexes</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>PC.Human <span class="ot">&lt;-</span> <span class="fu">getPCGroups</span>(<span class="at">Groups =</span> PCGroups, <span class="at">Organism =</span> <span class="st">&quot;Human&quot;</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">Type =</span> <span class="st">&quot;EntrezID&quot;</span>)</span></code></pre></div>
+<p>In order to train and test the predictive performance of the PCLasso model, we divide the data set into a training set and a test set.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">20150122</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>idx.train <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(x), <span class="fu">round</span>(<span class="fu">nrow</span>(x)<span class="sc">*</span><span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>x.train <span class="ot">&lt;-</span> x[idx.train,]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>y.train <span class="ot">&lt;-</span> y[idx.train,]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>x.test <span class="ot">&lt;-</span> x[<span class="sc">-</span>idx.train,]</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>y.test <span class="ot">&lt;-</span> y[<span class="sc">-</span>idx.train,]</span></code></pre></div>
+<p>We usually use <code>cv.PCLasso</code> instead of <code>PCLasso</code> to train the model, because <code>cv.PCLasso</code> helps us choose the best <span class="math inline">\(\lambda\)</span> through k-fold cross validation.</p>
+<p>Train the PCLasso model based on the training set data:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit cv.PCLasso model</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>cv.fit1 <span class="ot">&lt;-</span> <span class="fu">cv.PCLasso</span>(<span class="at">x =</span> x.train, <span class="at">y =</span> y.train, <span class="at">group =</span> PC.Human, <span class="at">nfolds =</span> <span class="dv">5</span>)</span></code></pre></div>
+<p><code>cv.fit1</code> contains a list object that includes a <code>cv.grpsurv</code> object <code>cv.fit</code> and a list of detected protein complexes <code>complexes.dt</code>. <code>complexes.dt</code> contains the proteins that exist in the expression matrix <code>x.train</code> and are used for model training.</p>
+<p>We can visualize the norm of the protein complexes by executing the <code>plot</code> function:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the norm of each group</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv.fit1, <span class="at">norm =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Each curve in the figure corresponds to a group (protein complex). It shows the path of the norm of each protein complex and <span class="math inline">\(L_1\)</span>-norm when <span class="math inline">\(\lambda\)</span> varies.</p>
+<p>Visualize the coefficients:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the individual coefficients</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv.fit1, <span class="at">norm =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Each curve in the figure corresponds to a variable (gene/protein). It shows the path of the coefficient of each gene/protein and <span class="math inline">\(L_1\)</span>-norm when <span class="math inline">\(\lambda\)</span> varies.</p>
+<p>The optimal <span class="math inline">\(\lambda\)</span> value and a cross validated error plot can be obtained to help evaluate our model.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the cross-validation error (deviance)</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv.fit1, <span class="at">type =</span> <span class="st">&quot;cve&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>In this plot, the vertical line shows where the cross-validation error curve hits its minimum. The optimal <span class="math inline">\(\lambda\)</span> can be obtained:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>cv.fit1<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.06767398</span></span></code></pre></div>
+<p>We can check the selected protein complexes (risk protein complexes) in our model.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selected protein complexes at lambda.min</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>sel.groups <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">type=</span><span class="st">&quot;groups&quot;</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">lambda =</span> cv.fit1<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>sel.groups <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">type=</span><span class="st">&quot;groups&quot;</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">lambda =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+<p>Check the number of risk protein complexes:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The number of risk protein complexes at lambda.min</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>sel.ngroups <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">type=</span><span class="st">&quot;ngroups&quot;</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">lambda =</span> cv.fit1<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>sel.ngroups <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">type=</span><span class="st">&quot;ngroups&quot;</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">lambda =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+<p>Check the norms of the protein complexes:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The coefficients of protein complexes at lambda.min</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>groups.norm <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">type=</span><span class="st">&quot;coefficients&quot;</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">lambda =</span> cv.fit1<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>groups.norm <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">type=</span><span class="st">&quot;coefficients&quot;</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">lambda =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+<p>Check the selected covariates (risk individual genes/proteins) in our model:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selected genes/proteins at lambda.min</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>sel.vars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">type=</span><span class="st">&quot;vars&quot;</span>,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">lambda=</span>cv.fit1<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>sel.vars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">type=</span><span class="st">&quot;vars&quot;</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">lambda=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+<p>Check the number of risk individual genes/proteins:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The number of risk genes/proteins at lambda.min</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>sel.nvars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">type=</span><span class="st">&quot;nvars&quot;</span>,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">lambda=</span>cv.fit1<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>sel.vars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">type=</span><span class="st">&quot;nvars&quot;</span>,</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">lambda=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+<p>Due to the overlap of protein complexes, there may be duplicates in the above risk genes/proteins. Use the following command to remove duplication:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selected genes/proteins at lambda.min</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>sel.vars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">type=</span><span class="st">&quot;vars.unique&quot;</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">lambda=</span>cv.fit1<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>sel.vars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">type=</span><span class="st">&quot;vars.unique&quot;</span>,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">lambda=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"># The number of risk genes/proteins at lambda.min</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>sel.nvars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">type=</span><span class="st">&quot;nvars.unique&quot;</span>,</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>                     <span class="at">lambda=</span>cv.fit1<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>sel.vars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">type=</span><span class="st">&quot;nvars.unique&quot;</span>,</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>                    <span class="at">lambda=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+<p>The fitted PCLasso model can by used to predict survival risk of new patients:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># predict risk scores of samples in x.test</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">x =</span> x.test, <span class="at">type=</span><span class="st">&quot;link&quot;</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">lambda=</span>cv.fit1<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit1, <span class="at">x =</span> x.test, <span class="at">type=</span><span class="st">&quot;link&quot;</span>,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">lambda=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+</div>
+<div id="pclasso2-1" class="section level2">
+<h2>3.2 PCLasso2</h2>
+<p>The PCLasso2 model accepts a gene/protein expression matrix, a response vector, and protein complexes for training the classification model. We load a set of data created beforehand for illustration. Users can either load their own data or use those saved in the workspace.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load data</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(classData)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(PCGroups)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> classData<span class="sc">$</span>Exp</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> classData<span class="sc">$</span>Label</span></code></pre></div>
+<p>The commands load a list <code>classData</code> that contains a protein expression matrix <code>Exp</code> and class labels <code>Label</code> of patients in <code>Exp</code>, and a data frame <code>PCGroups</code> containing the protein complexes downloaded from [CORUM] (<a href="https://mips.helmholtz-muenchen.de/corum/" class="uri">https://mips.helmholtz-muenchen.de/corum/</a>).</p>
+<p>Use <code>getPCGroups</code> function to get human protein complexes from <code>PCGroups</code>. Note that the parameter <code>Type</code> should be consistent the gene names in <code>Exp</code>.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get human protein complexes</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>PC.Human <span class="ot">&lt;-</span> <span class="fu">getPCGroups</span>(<span class="at">Groups =</span> PCGroups, <span class="at">Organism =</span> <span class="st">&quot;Human&quot;</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">Type =</span> <span class="st">&quot;GeneSymbol&quot;</span>)</span></code></pre></div>
+<p>In order to train and test the predictive performance of the PCLasso2 model, we divide the data set into a training set and a test set.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">20150122</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>idx.train <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(x), <span class="fu">round</span>(<span class="fu">nrow</span>(x)<span class="sc">*</span><span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>))</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>x.train <span class="ot">&lt;-</span> x[idx.train,]</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>y.train <span class="ot">&lt;-</span> y[idx.train]</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>x.test <span class="ot">&lt;-</span> x[<span class="sc">-</span>idx.train,]</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>y.test <span class="ot">&lt;-</span> y[<span class="sc">-</span>idx.train]</span></code></pre></div>
+<p>We usually use <code>cv.PCLasso2</code> instead of <code>PCLasso2</code> to train the model, because <code>cv.PCLasso2</code> helps us choose the best <span class="math inline">\(\lambda\)</span> through k-fold cross validation.</p>
+<p>Train the PCLasso2 model based on the training set data:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>cv.fit2 <span class="ot">&lt;-</span> <span class="fu">cv.PCLasso2</span>(<span class="at">x =</span> x.train, <span class="at">y =</span> y.train, <span class="at">group =</span> PC.Human,</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">penalty =</span> <span class="st">&quot;grLasso&quot;</span>, <span class="at">family =</span> <span class="st">&quot;binomial&quot;</span>, <span class="at">nfolds =</span> <span class="dv">10</span>)</span></code></pre></div>
+<p><code>cv.fit2</code> contains a list object that includes a <code>cv.grpreg</code> object <code>cv.fit</code> and a list of detected protein complexes <code>complexes.dt</code>. <code>complexes.dt</code> contains the proteins that exist in the expression matrix <code>x.train</code> and are used for model training.</p>
+<p>We can visualize the norm of the protein complexes by executing the <code>plot</code> function:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the norm of each group</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv.fit2, <span class="at">norm =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Each curve in the figure corresponds to a group (protein complex). It shows the path of the norm of each protein complex and <span class="math inline">\(L_1\)</span>-norm when <span class="math inline">\(\lambda\)</span> varies.</p>
+<p>Visualize the coefficients:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the individual coefficients</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv.fit2, <span class="at">norm =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Each curve in the figure corresponds to a variable (gene/protein). It shows the path of the coefficient of each gene/protein and <span class="math inline">\(L_1\)</span>-norm when <span class="math inline">\(\lambda\)</span> varies.</p>
+<p>The optimal <span class="math inline">\(\lambda\)</span> value and a cross validated error plot can be obtained to help evaluate our model.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the cross-validation error (deviance)</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cv.fit2, <span class="at">type =</span> <span class="st">&quot;cve&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>In this plot, the vertical line shows where the cross-validation error curve hits its minimum. The optimal <span class="math inline">\(\lambda\)</span> can be obtained:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>cv.fit2<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.01601148</span></span></code></pre></div>
+<p>We can check the selected protein complexes (risk protein complexes) in our model.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selected protein complexes at lambda.min</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>sel.groups <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">type=</span><span class="st">&quot;groups&quot;</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">lambda =</span> cv.fit2<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>sel.groups <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">type=</span><span class="st">&quot;groups&quot;</span>,</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">lambda =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+<p>Check the number of risk protein complexes:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The number of risk protein complexes at lambda.min</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>sel.ngroups <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">type=</span><span class="st">&quot;ngroups&quot;</span>,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">lambda =</span> cv.fit2<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>sel.ngroups <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">type=</span><span class="st">&quot;ngroups&quot;</span>,</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">lambda =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+<p>Check the norms of the protein complexes:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The coefficients of protein complexes at lambda.min</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>groups.norm <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">type=</span><span class="st">&quot;coefficients&quot;</span>,</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">lambda =</span> cv.fit2<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>groups.norm <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">type=</span><span class="st">&quot;coefficients&quot;</span>,</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">lambda =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+<p>Check the selected covariates (risk individual genes/proteins) in our model:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selected genes/proteins at lambda.min</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>sel.vars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">type=</span><span class="st">&quot;vars&quot;</span>,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">lambda=</span>cv.fit2<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>sel.vars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">type=</span><span class="st">&quot;vars&quot;</span>,</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">lambda=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+<p>Check the number of risk individual genes/proteins:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The number of risk genes/proteins at lambda.min</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>sel.nvars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">type=</span><span class="st">&quot;nvars&quot;</span>,</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">lambda=</span>cv.fit2<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>sel.vars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">type=</span><span class="st">&quot;nvars&quot;</span>,</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">lambda=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+<p>Due to the overlap of protein complexes, there may be duplicates in the above risk genes/proteins. Use the following command to remove duplication:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selected genes/proteins at lambda.min</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>sel.vars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">type=</span><span class="st">&quot;vars.unique&quot;</span>,</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">lambda=</span>cv.fit2<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>sel.vars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">type=</span><span class="st">&quot;vars.unique&quot;</span>,</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">lambda=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="co"># The number of risk genes/proteins at lambda.min</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>sel.nvars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">type=</span><span class="st">&quot;nvars.unique&quot;</span>,</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>                     <span class="at">lambda=</span>cv.fit2<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>sel.vars <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">type=</span><span class="st">&quot;nvars.unique&quot;</span>,</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>                    <span class="at">lambda=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+<p>The fitted PCLasso2 model can by used to predict the probability that the sample is a tumor sample:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># predict probabilities of samples in x.test</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">x =</span> x.test, <span class="at">type=</span><span class="st">&quot;response&quot;</span>,</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">lambda=</span>cv.fit2<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">x =</span> x.test, <span class="at">type=</span><span class="st">&quot;response&quot;</span>,</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">lambda=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+<p>Predict the class labels of new samples:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># predict class labels of samples in x.test</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">x =</span> x.test, <span class="at">type=</span><span class="st">&quot;class&quot;</span>,</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">lambda=</span>cv.fit2<span class="sc">$</span>cv.fit<span class="sc">$</span>lambda.min)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co"># For values of lambda not in the sequence of fitted models, linear</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="co"># interpolation is used.</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="at">object =</span> cv.fit2, <span class="at">x =</span> x.test, <span class="at">type=</span><span class="st">&quot;class&quot;</span>,</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">lambda=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.05</span>))</span></code></pre></div>
+</div>
+<div id="other-penalties" class="section level2">
+<h2>3.3 Other penalties</h2>
+<p>In addition to “grLasso”, two other penalty functions “grSCAD” and “grMCP” can be used to train PCLasso and PCLasso2 models. Their penalty for large coefficients is smaller than “grLasso”, so they tend to choose less risk protein complexes. Note that the two penalty functions have a new parameter <code>gamma</code>.</p>
+<p>Train the PCLasso model:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load data</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(survivalData)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(PCGroups)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> survivalData<span class="sc">$</span>Exp</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> survivalData<span class="sc">$</span>survData</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>PC.Human <span class="ot">&lt;-</span> <span class="fu">getPCGroups</span>(<span class="at">Groups =</span> PCGroups, <span class="at">Organism =</span> <span class="st">&quot;Human&quot;</span>,</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>                        <span class="at">Type =</span> <span class="st">&quot;EntrezID&quot;</span>)</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="co"># fit PCSCAD model</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>fit.PCSCAD <span class="ot">&lt;-</span> <span class="fu">PCLasso</span>(x, y, <span class="at">group =</span> PC.Human, <span class="at">penalty =</span> <span class="st">&quot;grSCAD&quot;</span>, <span class="at">gamma =</span> <span class="dv">6</span>)</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="co"># fit PCMCP model</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>fit.PCMCP <span class="ot">&lt;-</span> <span class="fu">PCLasso</span>(x, y, <span class="at">group =</span> PC.Human, <span class="at">penalty =</span> <span class="st">&quot;grMCP&quot;</span>, <span class="at">gamma =</span> <span class="dv">5</span>)</span></code></pre></div>
+<p>Train the PCLasso2 model:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load data</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(classData)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(PCGroups)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> classData<span class="sc">$</span>Exp</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>y <span class="ot">=</span> classData<span class="sc">$</span>Label</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>PC.Human <span class="ot">&lt;-</span> <span class="fu">getPCGroups</span>(<span class="at">Groups =</span> PCGroups, <span class="at">Organism =</span> <span class="st">&quot;Human&quot;</span>,</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>                        <span class="at">Type =</span> <span class="st">&quot;GeneSymbol&quot;</span>)</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a><span class="co"># fit PCSCAD model</span></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>fit.PCSCAD2 <span class="ot">&lt;-</span> <span class="fu">PCLasso2</span>(x, y, <span class="at">group =</span> PC.Human, <span class="at">penalty =</span> <span class="st">&quot;grSCAD&quot;</span>,</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>                       <span class="at">family =</span> <span class="st">&quot;binomial&quot;</span>, <span class="at">gamma =</span> <span class="dv">10</span>)</span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a><span class="co"># fit PCMCP model</span></span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>fit.PCMCP2 <span class="ot">&lt;-</span> <span class="fu">PCLasso2</span>(x, y, <span class="at">group =</span> PC.Human, <span class="at">penalty =</span> <span class="st">&quot;grMCP&quot;</span>,</span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>                      <span class="at">family =</span> <span class="st">&quot;binomial&quot;</span>, <span class="at">gamma =</span> <span class="dv">9</span>)</span></code></pre></div>
+<p>Other functions are similar to PCLasso and PCLasso2 models.</p>
+</div>
+</div>
+<div id="reference" class="section level1">
+<h1>4 Reference</h1>
+<ul>
+<li><p>PCLasso2: a protein complex-based, group Lasso-logistic model for risk protein complex discovery. To be published.</p></li>
+<li><p>PCLasso: a protein complex-based, group lasso-Cox model for accurate prognosis and risk protein complex discovery. Brief Bioinform, 2021.</p></li>
+<li><p>Park, H., Niida, A., Miyano, S. and Imoto, S. (2015) Sparse overlapping group lasso for integrative multi-omics analysis. Journal of computational biology: a journal of computational molecular cell biology, 22, 73-84.</p></li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
